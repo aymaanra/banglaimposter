@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0f0f17">
+<title>Bangla Imposter</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans Bengali", "Hind Siliguri", sans-serif;
+    background: radial-gradient(circle at 50% 0%, #1b1b2f 0%, #0f0f17 60%);
+    color: #f0eef7;
+    display: flex;
+    justify-content: center;
+    min-height: 100dvh;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .app {
+    width: 100%;
+    max-width: 430px;
+    padding: 24px 20px calc(24px + env(safe-area-inset-bottom));
+    display: flex;
+    flex-direction: column;
+  }
+  .screen { display: none; flex: 1; flex-direction: column; }
+  .screen.active { display: flex; }
+  .spacer { flex: 1; }
+
+  h1 { font-size: 2rem; text-align: center; margin-top: 12px; }
+  .tagline { text-align: center; color: #a9a4c0; margin: 12px 0 28px; line-height: 1.5; }
+  .muted { color: #a9a4c0; }
+  .small { font-size: 0.85rem; }
+
+  .field { margin-bottom: 24px; }
+  .field > label { display: block; font-weight: 600; margin-bottom: 10px; letter-spacing: 0.02em; }
+
+  .stepper {
+    display: flex; align-items: center; justify-content: space-between;
+    background: #1c1c2a; border-radius: 18px; padding: 8px;
+  }
+  .stepper button {
+    width: 64px; height: 56px; font-size: 1.8rem; border: none; border-radius: 12px;
+    background: #2a2a3e; color: #f0eef7; cursor: pointer;
+  }
+  .stepper button:active { background: #3a3a52; }
+  .stepper span { font-size: 1.6rem; font-weight: 700; }
+
+  .pills { display: flex; gap: 10px; }
+  .pill {
+    flex: 1; height: 52px; font-size: 1.1rem; font-weight: 600; border-radius: 14px;
+    border: 2px solid #2a2a3e; background: #1c1c2a; color: #f0eef7; cursor: pointer;
+  }
+  .pill.active { border-color: #7c5cff; background: #2b2350; }
+  .pill:disabled { opacity: 0.35; cursor: not-allowed; }
+  .pills + .muted { margin-top: 8px; }
+
+  .btn {
+    display: block; width: 100%; min-height: 58px; padding: 14px;
+    font-size: 1.15rem; font-weight: 700; border: none; border-radius: 16px;
+    background: #2a2a3e; color: #f0eef7; cursor: pointer; margin-top: 12px;
+  }
+  .btn:active { transform: scale(0.98); }
+  .btn-primary { background: linear-gradient(135deg, #7c5cff, #5a3fe0); }
+  .btn-danger { background: linear-gradient(135deg, #e94560, #c02348); }
+
+  .howto { margin-top: 24px; color: #a9a4c0; }
+  .howto summary { cursor: pointer; font-weight: 600; padding: 8px 0; }
+  .howto ol { margin: 8px 0 0 20px; line-height: 1.7; font-size: 0.92rem; }
+
+  .player-badge {
+    display: inline-block; align-self: center; padding: 10px 26px; border-radius: 999px;
+    background: #2b2350; border: 2px solid #7c5cff; font-size: 1.3rem; font-weight: 700;
+    margin-bottom: 20px;
+  }
+  .center { text-align: center; }
+  .pass-note { text-align: center; color: #a9a4c0; line-height: 1.6; margin-bottom: 8px; }
+
+  .card {
+    background: #1c1c2a; border: 2px solid #2a2a3e; border-radius: 22px;
+    padding: 28px 20px; text-align: center; min-height: 240px;
+    display: flex; flex-direction: column; justify-content: center; gap: 14px;
+  }
+  .card-label { font-size: 1rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #a9a4c0; }
+  .card-word { font-size: clamp(1.8rem, 9vw, 2.6rem); font-weight: 800; line-height: 1.3; overflow-wrap: break-word; }
+  .card-sub { font-size: 0.95rem; color: #a9a4c0; line-height: 1.5; }
+
+  .round-num { text-align: center; font-size: 2.2rem; font-weight: 800; margin: 24px 0 6px; }
+  .round-starter { text-align: center; font-size: 1.2rem; margin-bottom: 18px; }
+  .round-tip { text-align: center; color: #a9a4c0; line-height: 1.6; margin-bottom: 10px; }
+
+  .end-label { text-align: center; font-size: 1.1rem; color: #a9a4c0; margin-top: 24px; }
+  .imposter-name { text-align: center; font-size: 2.2rem; font-weight: 800; color: #e94560; margin: 10px 0 26px; }
+  .end-card {
+    background: #1c1c2a; border: 2px solid #2a2a3e; border-radius: 22px;
+    padding: 22px 20px; text-align: center; margin-bottom: 8px;
+  }
+  .end-card + .end-card { margin-top: 12px; }
+  .end-card .k { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em; color: #a9a4c0; margin-bottom: 8px; }
+  .end-card .v { font-size: 1.7rem; font-weight: 800; overflow-wrap: break-word; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- SETUP -->
+  <section id="screen-setup" class="screen active">
+    <h1>🕵️ Bangla Imposter</h1>
+    <p class="tagline">Everyone secretly sees the same Bangla word — except the imposter, who only gets a hint. Say related words, sniff them out!</p>
+    <div class="field">
+      <label>Players</label>
+      <div class="stepper">
+        <button id="p-minus" aria-label="Fewer players">−</button>
+        <span id="p-count">4</span>
+        <button id="p-plus" aria-label="More players">+</button>
+      </div>
+    </div>
+    <div class="field">
+      <label>Imposters</label>
+      <div class="pills">
+        <button class="pill active" data-imp="1">1</button>
+        <button class="pill" data-imp="2" id="pill-imp2" disabled>2</button>
+      </div>
+      <p class="muted small">2 imposters need at least 6 players.</p>
+    </div>
+    <button class="btn btn-primary" id="btn-start">Start Game</button>
+    <details class="howto">
+      <summary>How to play</summary>
+      <ol>
+        <li>Pass the phone around. Each player taps once to secretly see the word.</li>
+        <li>The imposter sees only a hint — they must bluff.</li>
+        <li>Going around the circle, everyone says one word related to the secret word.</li>
+        <li>Not sure who's faking? Play another round.</li>
+        <li>Accuse out loud, then reveal the imposter!</li>
+      </ol>
+    </details>
+    <div class="spacer"></div>
+  </section>
+
+  <!-- PASS & REVEAL -->
+  <section id="screen-pass" class="screen">
+    <div id="handoff" class="center">
+      <div class="spacer"></div>
+      <div class="player-badge" id="handoff-player">Player 1</div>
+      <p class="pass-note">Take the phone.<br>Make sure no one else can see the screen.</p>
+      <button class="btn btn-primary" id="btn-reveal">Tap to Reveal</button>
+    </div>
+    <div id="secret" hidden>
+      <div class="player-badge" id="secret-player" style="display:block; width:fit-content; margin-left:auto; margin-right:auto;">Player 1</div>
+      <div class="card">
+        <div class="card-label" id="card-label">Your secret word</div>
+        <div class="card-word" id="card-word"></div>
+        <div class="card-sub" id="card-sub"></div>
+      </div>
+      <button class="btn" id="btn-hide">Hide &amp; Pass the Phone</button>
+    </div>
+    <div class="spacer"></div>
+  </section>
+
+  <!-- CLUE ROUNDS -->
+  <section id="screen-rounds" class="screen">
+    <div class="spacer"></div>
+    <div class="round-num" id="round-num">Round 1</div>
+    <div class="round-starter"><strong id="round-starter-player">Player 1</strong> starts</div>
+    <p class="round-tip">Go around the circle — everyone says <strong>one word</strong> related to the secret word. Don't say the word itself!</p>
+    <p class="round-tip muted small">Discuss and accuse out loud. Still not sure? Play another round.</p>
+    <div class="spacer"></div>
+    <button class="btn" id="btn-another">Another Round</button>
+    <button class="btn btn-danger" id="btn-to-reveal">Reveal Imposter</button>
+  </section>
+
+  <!-- END / REVEAL -->
+  <section id="screen-end" class="screen">
+    <div class="end-label" id="end-label">The imposter was</div>
+    <div class="imposter-name" id="end-imposter">Player ?</div>
+    <div class="end-card">
+      <div class="k">Secret word</div>
+      <div class="v" id="end-word"></div>
+    </div>
+    <div class="end-card">
+      <div class="k">Imposter's hint</div>
+      <div class="v" id="end-hint"></div>
+    </div>
+    <div class="spacer"></div>
+    <button class="btn btn-primary" id="btn-again">Play Again</button>
+    <button class="btn" id="btn-new">New Game</button>
+  </section>
+
+</div>
+
+<script>
+// ---- Word list: [secret word, hint for the imposter] (all Bangla) ----
+const WORDS = [
+  // খাবার (food)
+  ["ইলিশ মাছ", "একটা মাছ"],
+  ["বিরিয়ানি", "মজার খাবার"],
+  ["ফুচকা", "রাস্তার খাবার"],
+  ["রসগোল্লা", "একটা মিষ্টি"],
+  ["চা", "একটা পানীয়"],
+  ["খিচুড়ি", "একটা খাবার"],
+  ["আম", "একটা ফল"],
+  ["কাঁঠাল", "একটা ফল"],
+  ["পান্তা ভাত", "একটা খাবার"],
+  ["জিলাপি", "একটা মিষ্টি"],
+  ["সিঙ্গারা", "একটা নাস্তা"],
+  ["মুড়ি", "একটা নাস্তা"],
+  ["ডাব", "একটা পানীয়"],
+  ["আলু ভর্তা", "একটা খাবার"],
+  ["তেহারি", "মজার খাবার"],
+  ["পিঠা", "শীতের খাবার"],
+  // জায়গা (places)
+  ["কক্সবাজার", "ভ্রমণের জায়গা"],
+  ["সুন্দরবন", "ভ্রমণের জায়গা"],
+  ["ঢাকা", "একটা শহর"],
+  ["চট্টগ্রাম", "একটা শহর"],
+  ["সিলেট", "একটা শহর"],
+  ["সেন্ট মার্টিন", "একটা দ্বীপ"],
+  ["আহসান মঞ্জিল", "পুরনো স্থাপনা"],
+  ["লালবাগ কেল্লা", "পুরনো স্থাপনা"],
+  ["শহীদ মিনার", "একটা স্থাপনা"],
+  ["জাতীয় সংসদ ভবন", "বিখ্যাত ভবন"],
+  ["বান্দরবান", "পাহাড়ি জায়গা"],
+  ["পদ্মা সেতু", "বিখ্যাত স্থাপনা"],
+  // যানবাহন (transport)
+  ["রিকশা", "একটা যানবাহন"],
+  ["সিএনজি", "একটা যানবাহন"],
+  ["লঞ্চ", "একটা যানবাহন"],
+  ["বাস", "একটা যানবাহন"],
+  ["ট্রেন", "একটা যানবাহন"],
+  ["নৌকা", "একটা যানবাহন"],
+  // খেলা (sports & games)
+  ["ক্রিকেট", "একটা খেলা"],
+  ["ফুটবল", "একটা খেলা"],
+  ["কাবাডি", "একটা খেলা"],
+  ["ব্যাডমিন্টন", "একটা খেলা"],
+  ["দাবা", "একটা খেলা"],
+  ["লুডু", "একটা খেলা"],
+  ["ক্যারম", "একটা খেলা"],
+  ["সাকিব আল হাসান", "একজন খেলোয়াড়"],
+  ["তামিম ইকবাল", "একজন খেলোয়াড়"],
+  // প্রাণী (animals)
+  ["রয়েল বেঙ্গল টাইগার", "একটা প্রাণী"],
+  ["হাতি", "একটা প্রাণী"],
+  ["কুমির", "একটা প্রাণী"],
+  ["বানর", "একটা প্রাণী"],
+  ["দোয়েল", "একটা পাখি"],
+  ["কাক", "একটা পাখি"],
+  ["গরু", "একটা প্রাণী"],
+  ["ছাগল", "একটা প্রাণী"],
+  ["মশা", "একটা পোকা"],
+  ["বিড়াল", "একটা প্রাণী"],
+  // দৈনন্দিন জিনিস (everyday things)
+  ["মোবাইল ফোন", "দৈনন্দিন জিনিস"],
+  ["টেলিভিশন", "ইলেকট্রনিক জিনিস"],
+  ["ফ্রিজ", "ইলেকট্রনিক জিনিস"],
+  ["সিলিং ফ্যান", "ইলেকট্রনিক জিনিস"],
+  ["মশারি", "ঘরের জিনিস"],
+  ["বালিশ", "ঘরের জিনিস"],
+  ["ছাতা", "দরকারি জিনিস"],
+  ["লুঙ্গি", "একটা পোশাক"],
+  ["শাড়ি", "একটা পোশাক"],
+  ["পাঞ্জাবি", "একটা পোশাক"],
+  ["হারিকেন", "পুরনো জিনিস"],
+  ["কলম", "পড়াশোনার জিনিস"],
+  ["চশমা", "দরকারি জিনিস"],
+  ["টাকা", "দরকারি জিনিস"],
+  // সংস্কৃতি ও উৎসব (culture & festivals)
+  ["পহেলা বৈশাখ", "একটা উৎসব"],
+  ["ঈদ", "একটা উৎসব"],
+  ["দুর্গাপূজা", "একটা উৎসব"],
+  ["বিয়ে", "একটা অনুষ্ঠান"],
+  ["মেলা", "একটা অনুষ্ঠান"],
+  ["রবীন্দ্রনাথ ঠাকুর", "বিখ্যাত মানুষ"],
+  ["কাজী নজরুল ইসলাম", "বিখ্যাত মানুষ"],
+  ["একুশে ফেব্রুয়ারি", "একটা বিশেষ দিন"],
+  ["বিজয় দিবস", "একটা বিশেষ দিন"],
+  ["বাউল গান", "এক ধরনের গান"],
+  ["আড্ডা", "বন্ধুদের সাথে করা হয়"],
+  // প্রকৃতি (nature)
+  ["বৃষ্টি", "আবহাওয়া সম্পর্কিত"],
+  ["বন্যা", "প্রাকৃতিক দুর্যোগ"],
+  ["ঘূর্ণিঝড়", "প্রাকৃতিক দুর্যোগ"],
+  ["শীতকাল", "একটা ঋতু"],
+  ["বর্ষাকাল", "একটা ঋতু"],
+  ["কালবৈশাখী", "আবহাওয়া সম্পর্কিত"],
+  ["পদ্মা নদী", "একটা নদী"],
+  ["যমুনা নদী", "একটা নদী"],
+  ["শাপলা", "একটা ফুল"],
+  ["গোলাপ", "একটা ফুল"],
+  ["কৃষ্ণচূড়া", "একটা গাছ"],
+  ["তালগাছ", "একটা গাছ"],
+  ["বটগাছ", "একটা গাছ"],
+  // পেশা (professions)
+  ["ডাক্তার", "একটা পেশা"],
+  ["শিক্ষক", "একটা পেশা"],
+  ["কৃষক", "একটা পেশা"],
+  ["জেলে", "একটা পেশা"],
+  ["দর্জি", "একটা পেশা"],
+  ["রিকশাওয়ালা", "একটা পেশা"],
+  // স্কুল (school)
+  ["পরীক্ষা", "পড়াশোনা সম্পর্কিত"],
+  ["টিফিন", "স্কুল সম্পর্কিত"],
+  ["ব্ল্যাকবোর্ড", "স্কুল সম্পর্কিত"],
+  ["প্রাইভেট টিউটর", "পড়াশোনা সম্পর্কিত"],
+];
+
+const MIN_PLAYERS = 3, MAX_PLAYERS = 12, TWO_IMPOSTER_MIN = 6;
+
+const state = {
+  playerCount: 4,
+  imposterCount: 1,
+  imposters: [],      // 0-based player indices
+  word: "",
+  hint: "",
+  current: 0,         // 0-based index of the player about to reveal
+  round: 1,
+  starter: 0,         // 0-based index of the player who starts the round
+  usedWords: new Set(),
+  inGame: false,
+};
+
+const $ = (id) => document.getElementById(id);
+
+function showScreen(name) {
+  document.querySelectorAll(".screen").forEach((s) => s.classList.remove("active"));
+  $("screen-" + name).classList.add("active");
+}
+
+// ---- Setup ----
+function renderSetup() {
+  $("p-count").textContent = state.playerCount;
+  const two = $("pill-imp2");
+  two.disabled = state.playerCount < TWO_IMPOSTER_MIN;
+  if (two.disabled && state.imposterCount === 2) state.imposterCount = 1;
+  document.querySelectorAll(".pill").forEach((p) => {
+    p.classList.toggle("active", Number(p.dataset.imp) === state.imposterCount);
+  });
+}
+
+$("p-minus").onclick = () => { state.playerCount = Math.max(MIN_PLAYERS, state.playerCount - 1); renderSetup(); };
+$("p-plus").onclick = () => { state.playerCount = Math.min(MAX_PLAYERS, state.playerCount + 1); renderSetup(); };
+document.querySelectorAll(".pill").forEach((p) => {
+  p.onclick = () => { state.imposterCount = Number(p.dataset.imp); renderSetup(); };
+});
+
+// ---- Game start ----
+function pickWord() {
+  if (state.usedWords.size >= WORDS.length) state.usedWords.clear();
+  let i;
+  do { i = Math.floor(Math.random() * WORDS.length); } while (state.usedWords.has(i));
+  state.usedWords.add(i);
+  [state.word, state.hint] = WORDS[i];
+}
+
+function pickImposters() {
+  const pool = [...Array(state.playerCount).keys()];
+  state.imposters = [];
+  for (let n = 0; n < state.imposterCount; n++) {
+    state.imposters.push(pool.splice(Math.floor(Math.random() * pool.length), 1)[0]);
+  }
+}
+
+function startGame() {
+  pickWord();
+  pickImposters();
+  state.current = 0;
+  state.round = 1;
+  state.starter = Math.floor(Math.random() * state.playerCount);
+  state.inGame = true;
+  renderHandoff();
+  showScreen("pass");
+}
+
+$("btn-start").onclick = startGame;
+
+// ---- Pass & reveal ----
+function renderHandoff() {
+  $("handoff-player").textContent = "Player " + (state.current + 1);
+  $("handoff").hidden = false;
+  $("secret").hidden = true;
+}
+
+$("btn-reveal").onclick = () => {
+  const isImposter = state.imposters.includes(state.current);
+  $("secret-player").textContent = "Player " + (state.current + 1);
+  if (isImposter) {
+    $("card-label").textContent = "🕵️ You are the imposter";
+    $("card-word").textContent = state.hint;
+    $("card-sub").textContent = "That's only a hint — bluff like you know the word!";
+  } else {
+    $("card-label").textContent = "Your secret word";
+    $("card-word").textContent = state.word;
+    $("card-sub").textContent = "Remember it — and never say it out loud!";
+  }
+  $("handoff").hidden = true;
+  $("secret").hidden = false;
+};
+
+$("btn-hide").onclick = () => {
+  state.current++;
+  if (state.current < state.playerCount) {
+    renderHandoff();
+  } else {
+    renderRound();
+    showScreen("rounds");
+  }
+};
+
+// ---- Clue rounds ----
+function renderRound() {
+  $("round-num").textContent = "Round " + state.round;
+  $("round-starter-player").textContent = "Player " + (state.starter + 1);
+}
+
+$("btn-another").onclick = () => {
+  state.round++;
+  state.starter = (state.starter + 1) % state.playerCount;
+  renderRound();
+};
+
+$("btn-to-reveal").onclick = () => {
+  const names = state.imposters.map((i) => "Player " + (i + 1)).join(" & ");
+  $("end-label").textContent = state.imposters.length > 1 ? "The imposters were" : "The imposter was";
+  $("end-imposter").textContent = names;
+  $("end-word").textContent = state.word;
+  $("end-hint").textContent = state.hint;
+  state.inGame = false;
+  showScreen("end");
+};
+
+// ---- End ----
+$("btn-again").onclick = startGame;
+$("btn-new").onclick = () => { state.inGame = false; renderSetup(); showScreen("setup"); };
+
+window.addEventListener("beforeunload", (e) => { if (state.inGame) e.preventDefault(); });
+
+renderSetup();
+</script>
+</body>
+</html>
