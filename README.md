@@ -21,6 +21,6 @@ It's a single self-contained `index.html` — no build, no dependencies, works o
 
 ## Notes
 
-- ~100 built-in Bangla word/hint pairs across categories: food, places, transport, sports, animals, everyday things, culture, nature, professions, and school.
+- ~150 built-in Bangla word/hint pairs across categories: food, places, transport, sports, animals, everyday things, culture, nature, professions, school — plus Bangladeshi celebrities, politicians, cricketers, and society staples (হিরো আলম, তারেক জিয়া, ট্রাফিক জ্যাম…).
 - Words don't repeat within a session until the whole list has been used.
 - UI is in English; secret words and hints are in Bangla.
